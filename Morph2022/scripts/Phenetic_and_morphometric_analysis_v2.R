@@ -1,9 +1,11 @@
 #Pipeline to explore phenetic and morphometric data
+#block to define terms
+#define analysis name
 
 
 #Check working directory
 getwd()
-
+setwd("C:/Users/hkenned6/Documents/Melichrus/Morphology (morphometrics, PATN, DELTA)/Helen/Morph2022")
 # load packages
 
 library(xlsx) #gives you access to the package contents
@@ -13,12 +15,13 @@ library(ggplot2)
 library(tidyverse)
 library(GGally)
 library(ggpubr)
+library(mclust)
 
 
 #convert csv, then use tidyverse for subsetting and filtering
 dataset0 <- read_csv("data/rawdata.csv", na= c("","NA","#DIV/0!"))
  # drop_na()     to get rid of all missing data. Missing data exploration packages.               
-glimpse(dataset0)
+#glimpse(dataset0)
 # read in the data set and assign it the name 'dataset0'. Update endrow as you collect more data. 
 dataset0 <- read.xlsx(file = "data/rawdata.xlsx", sheetIndex = 1, endRow = 71, row.names = 6)
 #remove metadata columns
@@ -32,8 +35,8 @@ dataset0 <- read.xlsx(file = "data/rawdata.xlsx", sheetIndex = 1, endRow = 71, r
 #script here that checks column names with metadata
 
 ## import column metadata to check matching of names
-colmeta=read_csv("data/column_metadata.csv")
-colmeta$charname=colmeta$`Character (if you change it here, change it in the rawdata)`
+colmeta=read_csv("data/metadatacol.csv")
+colmeta$charname=colmeta$charname
 
 ## Characters in metadata without matches in dataset
 colmeta$charname[!colmeta$charname %in% names(dataset0)]
@@ -85,12 +88,16 @@ dist
 #dist #show distance matrix
 clust <- hclust(dist, method = "average") #runs UPGMA cluster analysis
 plot(clust)#plots dendrogram
-
+str(clust)
+class(clust)
 #look at correlated characters with ggpairs. 
 
 # clustering analysis
-nmds <- metaMDS(dist, k=3) #run NMDS analysis
+nmds <- metaMDS(dist, k=2) #run NMDS analysis
 plot(nmds, type = 't') #plots NMDS 1 vs 2
+
+
+
 # to inspect data, when it looks interesting use ggally
 str(nmds)
 str(nmds$points)
@@ -124,6 +131,31 @@ arrows <- data.frame(importance$vectors$arrows)
 randpandarrow <- cbind(pvalues, rvalues,arrows)
 write.csv(randpandarrow, "C:/Users/hkenned6/Documents/Melichrus/Morphology (morphometrics, PATN, DELTA)/Morphometrics_2021_2022/results/importancedatasetislav1.csv")
 #Sort characters for importance to understand which characters are seperating the specimens. 
+
+#Mclust analysis
+
+NMDSclustering <- Mclust(nmds$points)
+plot(NMDSclustering)
+3
+0
+str(nmds)
+summary(NMDSclustering)
+str(NMDSclustering)
+NMDSclustering$bic
+#compare this value between different values of k. 
+
+
+# #, G = NULL, modelNames = NULL, 
+#        prior = NULL, 
+#        control = emControl(), 
+#        initialization = NULL, 
+#        warn = mclust.options("warn"), 
+#        x =  NULL, 
+#        verbose = interactive(), ...)
+
+
+
+
 
 
 # cluster Importance

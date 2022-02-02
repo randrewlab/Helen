@@ -2,7 +2,9 @@
 title: "Data filtering and manipulation"
 author: "Shelley, Sangay and AC"
 date: "02/02/2022"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 *Objective:* Being able to subset Helen's data by including or excluding samples based on filters (e.g. list of characters, groupings, etc.)
