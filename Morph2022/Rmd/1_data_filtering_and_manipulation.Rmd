@@ -6,33 +6,50 @@ output:
   pdf_document: default
   html_document: default
 ---
+```{r}
+install.packages("knitr")
+install.packages("vegan")
+install.packages("ggplot2")
+install.packages("tidyverse")
+```
 
-*Objective:* Being able to subset Helen's data by including or excluding samples based on filters (e.g. list of characters, groupings, etc.)
 
-*Description of script:* This is a two-step filtering processs for the downstream analysis with filtering process (1) based on the characters used and filtering process (2) based on the samples to include.
+*Objective:* To subset morphological data by including or excluding samples based on filters (e.g. list of characters, groupings, etc.)
+
+*Description of script:* This is a two-step filtering processes for the downstream analysis with filtering process (1) based on the characters used and (2) based on the samples to include.
 
 ```{r setup, include=FALSE, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(xlsx) #gives you access to the package contents
 library(cluster) #for hierarchical clustering
 library(vegan) # NMDS and other statistics
 library(ggplot2)
 library(tidyverse)
 ```
+Define names for input files and directories
+"indir" is the directory containing the input files
+```{r filenames and directories}
 
-## Documentation of data filtering and manipulation for Helen's analysis
+indir <- "../data"
+rawdata <- "raw_data.csv"
+rawdatafile <- file.path(indir,rawdata)
+metadata <- "column_metadata.csv"
+metadatafile <- file.path(indir,metadata)
+```
+
+
+## Documentation of data filtering and manipulation for morphological analysis
 
 The analysis is based on two data files:
   `data/raw_data.csv`
   `data/column_metadata.csv`
 
 The selection of characters for downstream analyses is based on the filtering of groups in the `data/column_metadata.csv` file.
-Charaters are included in a group if marked with a yes (`Y`). Then these characters are pulled in the rawdata file based on the list of selected characters in the `data/column_metadata.csv`.
+Characters are included in a group if marked with a yes (`Y`). Then these characters are pulled in the rawdata file based on the list of selected characters in the `data/column_metadata.csv`.
 
-```{r rawdata}
-dataset0<-read_csv("../data/raw_data.csv") %>%
+```{r read rawdata}
+dataset0<-read_csv(rawdatafile) %>%
   glimpse()
-col_meta<-read_csv("../data/column_metadata.csv") %>%
+col_meta<-read_csv(metadatafile) %>%
   glimpse() #List column names to select character for downstream analysis
             #"group" names correspond to the set of characters selected for a specific analysis
             #(e.g. "group1" can correspond to NMDS analysis)
@@ -47,7 +64,7 @@ col_meta<-read_csv("../data/column_metadata.csv") %>%
 
 
 # Filtering of variables (characters) to use in analysis based on the column_metadata file:
-Decides which columns (characters) to use
+Decides which columns (characters) to use 
 
 ```{r}
 include_columns<-filter(col_meta,Group1=="y")
@@ -71,7 +88,7 @@ Additional columns can be added to the rawdata file to create new groups in a si
 
 ```{r}
 datasetisla<-filter(dataset_final,Isla_group=="y")
-dataset_Isla<-select(dataset_Isla,-Isla_group)
+dataset_Isla<-select(dataset_Isla,-Isla_group) ###huh??
 view(dataset_Isla)
 ```
 
