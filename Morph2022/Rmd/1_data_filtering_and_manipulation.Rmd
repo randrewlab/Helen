@@ -12,8 +12,6 @@ install.packages("vegan")
 install.packages("ggplot2")
 install.packages("tidyverse")
 ```
-
-
 *Objective:* To subset morphological data by including or excluding samples based on filters (e.g. list of characters, groupings, etc.)
 
 *Description of script:* This is a two-step filtering processes for the downstream analysis with filtering process (1) based on the characters used and (2) based on the samples to include.
@@ -30,18 +28,21 @@ Define names for input files and directories
 ```{r filenames and directories}
 
 indir <- "../data"
-rawdata <- "raw_data.csv"
+rawdata <- "rawdata.csv"
 rawdatafile <- file.path(indir,rawdata)
-metadata <- "column_metadata.csv"
-metadatafile <- file.path(indir,metadata)
+column_metadata <- "column_metadata.csv"
+column_metadatafile <- file.path(indir,column_metadata)
+row_metadata <- "row_metadata.csv"
+row_metadatafile <- file.path(indir,row_metadata)
 ```
 
 
 ## Documentation of data filtering and manipulation for morphological analysis
 
-The analysis is based on two data files:
-  `data/raw_data.csv`
+The analysis is based on three data files:
+  `data/rawdata.csv`
   `data/column_metadata.csv`
+  `data/row_metadata.csv`
 
 The selection of characters for downstream analyses is based on the filtering of groups in the `data/column_metadata.csv` file.
 Characters are included in a group if marked with a yes (`Y`). Then these characters are pulled in the rawdata file based on the list of selected characters in the `data/column_metadata.csv`.
@@ -49,16 +50,28 @@ Characters are included in a group if marked with a yes (`Y`). Then these charac
 ```{r read rawdata}
 dataset0<-read_csv(rawdatafile) %>%
   glimpse()
-col_meta<-read_csv(metadatafile) %>%
+col_meta<-read_csv(column_metadatafile) %>%
   glimpse() #List column names to select character for downstream analysis
             #"group" names correspond to the set of characters selected for a specific analysis
             #(e.g. "group1" can correspond to NMDS analysis)
+row_meta<-read_csv(row_metadatafile) %>%
+  glimpse()
 ```
 
-# Updating the rawdata and metadata with additional measured characters:
+# Check integrity of rawdata headings with column metadata values
+Output is two lists; 
+1. values which are in metadata but not in rawdata
+2. values which are in rawdata but not in metadata
+
+If no values are returned, lists match perfectly.
 
 ```{r}
-### Rose's code ###
+
+## Characters in metadata without matches in dataset
+col_meta$character[!col_meta$character %in% names(dataset0)]
+
+## Characters in dataset without matches in metadata
+names(dataset0)[!names(dataset0) %in% col_meta$character]
 ```
 
 
@@ -68,27 +81,23 @@ Decides which columns (characters) to use
 
 ```{r}
 include_columns<-filter(col_meta,Group1=="y")
-include_columns$`Analysis Group`
-dataset_columns <- select(dataset0,include_columns$`Analysis Group` ) %>%
-  glimpse()
-```
-
-The ID column still contains some NAs so we drop those.
-```{r}
-dataset_columns$ID
-dataset_final<-filter(dataset_columns,ID != "NA") %>%
+include_columns$character
+dataset_columns <- select(dataset0,include_columns$character ) %>%
   glimpse()
 ```
 
 ## Filtering the rows of data for specific OTUs (select which samples to use)
 
-This is from the rawdata file.
-Dataset Isla is filtering from the isla group column of the rawdata file.
-Additional columns can be added to the rawdata file to create new groups in a similar way.
+This is from the row_metadata file.
+Dataset Isla is filtering from the isla group column of the row_metadata file.
+Additional columns can be added to the row_metadata file to create new groups in a similar way.
 
-```{r}
+```{r COME BACK TO THIS, HOW TO SUBSET????}
+include_rows<-filter(row_meta,Islagroup=="Y")
+dataset_rows <- filter(dataset0,match(dataset0$ID,include_rows$id))
+
 datasetisla<-filter(dataset_final,Isla_group=="y")
-dataset_Isla<-select(dataset_Isla,-Isla_group) ###huh??
+datasetisla<-select(dataset_Isla,-Isla_group)
 view(dataset_Isla)
 ```
 

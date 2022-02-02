@@ -1,4 +1,4 @@
-Character number,charname,States,Morphometric set,Description set,Definition,Quantitative(QUANT)/ qualitative(QUAL),"Vegetative (V), reproductive (R), leaf anatomy (LA)",Measured (M) or derived (D)
+Character number,character,States,Morphometric set,Description set,Definition,Quantitative(QUANT)/ qualitative(QUAL),"Vegetative (V), reproductive (R), leaf anatomy (LA)",Measured (M) or derived (D)
 1,Habit; type ,shrub,N,Y,,,,
 2,"Habit; height, population min",,N,Y,,,,
 3,"Habit; height, population max",,Y,Y,,,,
