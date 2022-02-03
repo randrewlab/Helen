@@ -91,13 +91,30 @@ dataset_columns <- select(dataset0,include_columns$character ) %>%
 This is from the row_metadata file.
 Dataset Isla is filtering from the isla group column of the row_metadata file.
 Additional columns can be added to the row_metadata file to create new groups in a similar way.
+Use semi_join to keep all rows in dataset0 that match include_rows based in value of Collection number
 
-```{r COME BACK TO THIS, HOW TO SUBSET????}
+```{r Filter_rows}
 include_rows<-filter(row_meta,Islagroup=="Y")
-dataset_rows <- filter(dataset0,match(dataset0$ID,include_rows$id))
-
-datasetisla<-filter(dataset_final,Isla_group=="y")
-datasetisla<-select(dataset_Isla,-Isla_group)
-view(dataset_Isla)
+datasetisla<- dataset0 %>% semi_join(include_rows, by = "Collection number")
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
